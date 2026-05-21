@@ -10,7 +10,10 @@ parameters:
     app.tva_rate: 0.20
     app.reduction_groupe_taux: 0.10
     app.reduction_groupe_seuil: 5
-    
+    app.max_tickets_par_user: 10
+    app.delai_purge_minutes: 30
+    app.cache_evenements_ttl: 600
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -24,3 +27,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\CachedEvenementService:
+        decorates: App\Service\EvenementService
+        arguments:
+            $inner: '@.inner'
+            $cache: '@cache.app'
+            $ttl: '%app.cache_evenements_ttl%'
