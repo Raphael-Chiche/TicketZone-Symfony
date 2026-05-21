@@ -5,13 +5,16 @@ namespace App\Service;
 use App\Entity\Evenement;
 use App\Entity\Reservation;
 use App\Entity\User;
+use App\Message\ConfirmationReservationMessage;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ReservationService
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TarifService $tarifService,
+        private readonly MessageBusInterface $messageBus,
     ) {}
 
     public function reserver(User $user, Evenement $evenement, int $quantite): Reservation
@@ -35,6 +38,8 @@ class ReservationService
 
         $this->em->persist($reservation);
         $this->em->flush();
+
+        $this->messageBus->dispatch(new ConfirmationReservationMessage($reservation->getId()));
 
         return $reservation;
     }
