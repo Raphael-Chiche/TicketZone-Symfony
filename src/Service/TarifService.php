@@ -7,18 +7,18 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class TarifService
 {
-    private $entityManager;
-    private $tarifRepository;
-
     public function __construct(
-        #[Autowire('%app.tva_rate')]
-        private readonly float $tvaRate,
-        #[Autowire('%app.reduction_groupe_taux')]
-        private readonly float $reductionGroupeTaux,
-        #[Autowire('%app.reduction_groupe_seuil')]
-        private readonly int $reductionGroupeSeuil,
-    )
-    {}
+        #[Autowire('%app.tva_rate%')]
+        private float|string $tvaRate,
+        #[Autowire('%app.reduction_groupe_taux%')]
+        private float|string $reductionGroupeTaux,
+        #[Autowire('%app.reduction_groupe_seuil%')]
+        private int|string $reductionGroupeSeuil,
+    ) {
+        $this->tvaRate = (float) $this->tvaRate;
+        $this->reductionGroupeTaux = (float) $this->reductionGroupeTaux;
+        $this->reductionGroupeSeuil = (int) $this->reductionGroupeSeuil;
+    }
 
     public function calculerTotal(Evenement $evenement, int $quantite): float
     {
